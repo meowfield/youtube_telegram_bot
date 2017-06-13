@@ -43,7 +43,7 @@ func (dl *Downloader) Start() {
 func (dl *Downloader) download(req *DownloadRequest) {
 	path := fmt.Sprintf("%d-%d", req.chat_id, time.Now().UnixNano())
 	ext := "m4a"
-	op := fmt.Sprintf("%s --prefer-ffmpeg -x --audio-format %s -o \"%s.%%(ext)s\" \"%s\"",
+	op := fmt.Sprintf("%s --prefer-ffmpeg --add-metadata -x --audio-format %s -o \"%s.%%(ext)s\" \"%s\"",
 		"/usr/local/bin/youtube-dl",
 		ext,
 		path,
