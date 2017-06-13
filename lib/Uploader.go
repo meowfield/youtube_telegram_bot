@@ -1,4 +1,4 @@
-package telegram_youtube_bot 
+package telegram_youtube_bot
 
 import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"

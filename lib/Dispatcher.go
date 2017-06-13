@@ -7,10 +7,10 @@ import (
 )
 
 const (
-	NoActiveJob string = "There are currently no active downloads or uploads."
-	StoppedJobs string = "Stopped %d job(s)"
-	State       string = "%s state: %s"
-  DownloadFailed string = "Download %s failed!"
+	NoActiveJob    string = "There are currently no active downloads or uploads."
+	StoppedJobs    string = "Stopped %d job(s)"
+	State          string = "%s state: %s"
+	DownloadFailed string = "Download %s failed!"
 )
 
 type Dispatcher struct {
@@ -69,7 +69,7 @@ func (d *Dispatcher) dispatch() {
 		case update := <-updates:
 			if update.Message != nil {
 				msg := update.Message
-        log.Printf("User: %d %s\n", msg.From.ID, msg.From.FirstName)
+				log.Printf("User: %d %s\n", msg.From.ID, msg.From.FirstName)
 				switch msg.Text {
 				case "/start":
 

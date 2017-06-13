@@ -9,7 +9,7 @@ import (
 )
 
 const (
-  ConfigFileName string = "config.json"
+	ConfigFileName string = "config.json"
 )
 
 type BotConfig struct {

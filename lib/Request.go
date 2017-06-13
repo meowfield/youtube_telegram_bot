@@ -1,4 +1,4 @@
-package telegram_youtube_bot 
+package telegram_youtube_bot
 
 //go:generate stringer -type=DownloadStatus
 
