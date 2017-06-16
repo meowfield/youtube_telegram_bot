@@ -13,11 +13,12 @@ const (
 )
 
 type BotConfig struct {
-	Downloader uint   `json:"downloaders"`
-	Uploader   uint   `json:"uploaders"`
-	Token      string `json:"token"`
-	APITimeout int    `json:"api_timeout"`
-	DebugBot   bool   `json:"debug_bot"`
+	Downloader   uint    `json:"downloaders"`
+	Uploader     uint    `json:"uploaders"`
+	Token        string  `json:"token"`
+	APITimeout   int     `json:"api_timeout"`
+	DebugBot     bool    `json:"debug_bot"`
+	AllowedUsers []int64 `json:"allowed"`
 }
 
 func readConfig() (BotConfig, error) {
@@ -52,6 +53,6 @@ func main() {
 	bot.Debug = config.DebugBot
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
-	dp := telegram_youtube_bot.NewDispatcher(config.Downloader, config.Uploader, bot, config.APITimeout)
+	dp := telegram_youtube_bot.NewDispatcher(config.Downloader, config.Uploader, bot, config.APITimeout, config.AllowedUsers)
 	dp.Start()
 }

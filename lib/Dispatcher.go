@@ -22,9 +22,10 @@ type Dispatcher struct {
 	numDownloaders uint
 	numUploaders   uint
 	results        map[int64]DownloadResults
+	allowedUsers   map[int64]struct{}
 }
 
-func NewDispatcher(numDownloaders, numUploaders uint, bot *tgbotapi.BotAPI, timeout int) *Dispatcher {
+func NewDispatcher(numDownloaders, numUploaders uint, bot *tgbotapi.BotAPI, timeout int, allowedIds []int64) *Dispatcher {
 	r := &Dispatcher{
 		done:           make(chan *DownloadResult),
 		downloaders:    make(chan chan *DownloadRequest),
@@ -33,7 +34,12 @@ func NewDispatcher(numDownloaders, numUploaders uint, bot *tgbotapi.BotAPI, time
 		apitimeout:     timeout,
 		numDownloaders: numDownloaders,
 		numUploaders:   numUploaders,
-		results:        make(map[int64]DownloadResults)}
+		results:        make(map[int64]DownloadResults),
+		allowedUsers:   make(map[int64]struct{})}
+
+	for _, id := range allowedIds {
+		r.allowedUsers[id] = struct{}{}
+	}
 	return r
 }
 
@@ -69,7 +75,12 @@ func (d *Dispatcher) dispatch() {
 		case update := <-updates:
 			if update.Message != nil {
 				msg := update.Message
-				log.Printf("User: %d %s\n", msg.From.ID, msg.From.FirstName)
+
+				if _, allowed := d.allowedUsers[msg.Chat.ID]; !allowed {
+					log.Printf("User not allowed: %d %s\n", msg.Chat.ID, msg.From.FirstName)
+					continue
+				}
+
 				switch msg.Text {
 				case "/start":
 
