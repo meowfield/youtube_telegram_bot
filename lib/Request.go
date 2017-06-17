@@ -49,18 +49,20 @@ func NewDownloadResult(req *DownloadRequest, status DownloadStatus) *DownloadRes
 }
 
 type DownloadRequest struct {
-	id      int
-	chat_id int64
-	url     string
-	stop    chan bool
+	id         int
+	chat_id    int64
+	url        string
+	stop       chan bool
+	fileformat string
 }
 
 func NewDownloadRequest(id int, chat_id int64, url string) *DownloadRequest {
 	return &DownloadRequest{
-		id:      id,
-		chat_id: chat_id,
-		url:     url,
-		stop:    make(chan bool, 1)}
+		id:         id,
+		chat_id:    chat_id,
+		url:        url,
+		stop:       make(chan bool, 1),
+		fileformat: "m4a"}
 }
 
 func (r *DownloadRequest) Stopped() bool {

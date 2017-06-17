@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	YoutubeDLCmd = "%s --prefer-ffmpeg --add-metadata --print-json --audio-format m4a -x \"%s\""
+	YoutubeDLCmd = "%s --prefer-ffmpeg --add-metadata --print-json --audio-format %s -x \"%s\""
 )
 
 //go:generate stringer -type=YoutubeInfo
@@ -62,7 +62,7 @@ func (dl *Downloader) Start() {
 	}()
 }
 func (dl *Downloader) download(req *DownloadRequest) {
-	op := fmt.Sprintf(YoutubeDLCmd, "/usr/local/bin/youtube-dl", req.url)
+	op := fmt.Sprintf(YoutubeDLCmd, "/usr/local/bin/youtube-dl", req.fileformat, req.url)
 
 	done := make(chan YoutubeInfo, 1)
 	cmd := exec.Command("sh", "-c", op)
