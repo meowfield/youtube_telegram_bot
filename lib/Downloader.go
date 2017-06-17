@@ -1,10 +1,35 @@
 package telegram_youtube_bot
 
 import (
+	_ "bytes"
+	"encoding/json"
 	"fmt"
+	"log"
 	"os/exec"
-	"time"
+	_ "strings"
+	_ "time"
 )
+
+const (
+	YoutubeDLCmd = "%s --prefer-ffmpeg --add-metadata --print-json --audio-format m4a -x \"%s\""
+)
+
+//go:generate stringer -type=YoutubeInfo
+type YoutubeInfo struct {
+	Filesize    int    `json:"filesize"`
+	UploaderID  string `json:"uploader_id"`
+	URL         string `json:"url"`
+	Filename    string `json:"_filename"`
+	Creator     string `json:"creator"`
+	WebpageURL  string `json:"webpage_url"`
+	Uploader    string `json:"uploader"`
+	Fulltitle   string `json:"fulltitle"`
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	UploadDate  string `json:"upload_date"`
+	Description string `json:"description"`
+	err         error
+}
 
 type Downloader struct {
 	downloaderChannel DownloaderChannel
@@ -39,29 +64,35 @@ func (dl *Downloader) Start() {
 		}
 	}()
 }
-
 func (dl *Downloader) download(req *DownloadRequest) {
-	path := fmt.Sprintf("%d-%d", req.chat_id, time.Now().UnixNano())
-	ext := "m4a"
-	op := fmt.Sprintf("%s --prefer-ffmpeg --add-metadata -x --audio-format %s -o \"%s.%%(ext)s\" \"%s\"",
-		"/usr/local/bin/youtube-dl",
-		ext,
-		path,
-		req.url)
-	done := make(chan error, 1)
+	op := fmt.Sprintf(YoutubeDLCmd, "/usr/local/bin/youtube-dl", req.url)
+
+	done := make(chan YoutubeInfo, 1)
 	cmd := exec.Command("sh", "-c", op)
-	cmd.Start()
+	stdout, err := cmd.StdoutPipe()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := cmd.Start(); err != nil {
+		log.Fatal(err)
+	}
+
 	go func() {
-		done <- cmd.Wait()
+		yt := YoutubeInfo{}
+		json.NewDecoder(stdout).Decode(&yt)
+		yt.err = cmd.Wait()
+		done <- yt
 	}()
 
 	select {
-	case err := <-done:
-		if err != nil {
+	case yt := <-done:
+		if yt.err != nil {
+			log.Println(yt.err)
 			dl.status <- NewDownloadResult(req, Failed)
 		} else {
-			path_with_ext := path + "." + ext
-			dl.status <- NewDownloadResultPath(req, path_with_ext, DownloadDone)
+			dl.status <- NewDownloadResultPath(req, yt.Filename, DownloadDone)
 		}
 	case <-req.stop:
 		cmd.Process.Kill()
