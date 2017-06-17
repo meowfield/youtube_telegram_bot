@@ -1,13 +1,10 @@
 package telegram_youtube_bot
 
 import (
-	_ "bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"os/exec"
-	_ "strings"
-	_ "time"
 )
 
 const (
