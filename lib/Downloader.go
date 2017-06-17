@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	YoutubeDLCmd = "%s --prefer-ffmpeg --add-metadata --print-json --audio-format %s -x \"%s\""
+	YoutubeDLCmd = "%s --prefer-ffmpeg --add-metadata --print-json --audio-format %s -x --output \"%%(title)s.%%(ext)s\" \"%s\""
 	WebmRegexp   = "webm$"
 )
 
