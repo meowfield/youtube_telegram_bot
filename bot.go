@@ -19,6 +19,7 @@ type BotConfig struct {
 	APITimeout   int     `json:"api_timeout"`
 	DebugBot     bool    `json:"debug_bot"`
 	AllowedUsers []int64 `json:"allowed"`
+	FileFormat   string  `json:"fileformat"`
 }
 
 func readConfig() (BotConfig, error) {
@@ -27,7 +28,8 @@ func readConfig() (BotConfig, error) {
 		Uploader:   1,
 		Token:      "",
 		APITimeout: 60,
-		DebugBot:   false}
+		DebugBot:   false,
+		FileFormat: "m4a"}
 
 	configFile, err := ioutil.ReadFile(ConfigFileName)
 	if err != nil {
