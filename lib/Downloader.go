@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"regexp"
 )
 
 const (
 	YoutubeDLCmd = "%s --prefer-ffmpeg --add-metadata --print-json --audio-format %s -x \"%s\""
+	WebmRegexp   = "webm$"
 )
 
 //go:generate stringer -type=YoutubeInfo
@@ -89,6 +91,8 @@ func (dl *Downloader) download(req *DownloadRequest) {
 			log.Println(yt.err)
 			dl.status <- NewDownloadResult(req, Failed)
 		} else {
+			re := regexp.MustCompile(WebmRegexp)
+			yt.Filename = re.ReplaceAllString(yt.Filename, req.fileformat)
 			dl.status <- NewDownloadResultPath(req, yt.Filename, DownloadDone)
 		}
 	case <-req.stop:
