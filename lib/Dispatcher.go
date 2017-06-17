@@ -150,6 +150,7 @@ func (d *Dispatcher) handleResult(result *DownloadResult) {
 				}(result)
 			case Failed:
 				failedMsg := tgbotapi.NewMessage(result.ChatId, fmt.Sprintf(DownloadFailed, result.Url))
+				failedMsg.DisableWebPagePreview = true
 				d.bot.Send(failedMsg)
 				fallthrough
 			case Stopped, UploadDone:
