@@ -3,6 +3,7 @@ package telegram_youtube_bot
 import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
+	"os"
 )
 
 type Uploader struct {
@@ -32,9 +33,14 @@ func (up *Uploader) Start() {
 			case res := <-up.requests:
 				up.status <- NewDownloadResult(res.Req, Uploading)
 				log.Printf("Uploading %s to %d.", res.FilePath, res.ChatId)
-				msg := tgbotapi.NewAudioUpload(res.ChatId, res.FilePath)
-				up.bot.Send(msg)
-				up.status <- NewDownloadResult(res.Req, UploadDone)
+				if _, err := os.Stat(res.FilePath); err == nil {
+					msg := tgbotapi.NewAudioUpload(res.ChatId, res.FilePath)
+					up.bot.Send(msg)
+					up.status <- NewDownloadResult(res.Req, UploadDone)
+				} else {
+					log.Printf("Uploading %s to %d failed", res.FilePath, res.ChatId)
+					up.status <- NewDownloadResult(res.Req, Failed)
+				}
 			}
 		}
 	}()
