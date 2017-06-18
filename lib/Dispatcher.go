@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
+	"regexp"
+	"strings"
 )
 
 const (
@@ -101,6 +103,10 @@ func (d *Dispatcher) dispatch() {
 				case "/status":
 					d.handleStatusMsg(msg.Chat.ID)
 				default:
+					if isValidYoutubeURL(msg.Text) == false {
+						log.Printf("Invalid Youtube-URL from %d: %s\n", msg.Chat.ID, msg.Text)
+						continue
+					}
 					download_id = download_id + 1
 					req := NewDownloadRequest(download_id, msg.Chat.ID, msg.Text)
 					d.results[msg.Chat.ID] = append(d.results[msg.Chat.ID], NewDownloadResult(req, WaitingForDownload))
@@ -115,6 +121,17 @@ func (d *Dispatcher) dispatch() {
 			d.handleResult(result)
 		}
 	}
+}
+
+func isValidYoutubeURL(url string) bool {
+	videoID := ""
+	if strings.Contains(url, "youtu") {
+		re := regexp.MustCompile(`(?:v|embed|watch\?v)(?:=|/)([^"&?/=%]{11})$`)
+		if match := re.MatchString(url); match {
+			videoID = re.FindStringSubmatch(url)[1]
+		}
+	}
+	return len(videoID) >= 10
 }
 
 func (d *Dispatcher) handleHelpMsg(chatID int64) {
