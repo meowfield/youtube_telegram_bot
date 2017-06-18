@@ -11,6 +11,16 @@ const (
 	StoppedJobs    string = "Stopped %d job(s)"
 	State          string = "%s state: %s"
 	DownloadFailed string = "Download %s failed!"
+	HelpMsg        string = `*Youtube-Music-Download-Bot*
+=========================
+*Description* 
+This bot downloads the audio of a youtube-video and sends it to the user. Just paste the video-url to this bot. 
+
+*Commands*
+/help - This message. 
+/stop - Stops all messages.
+/status - Show the status of all jobs
+`
 )
 
 type Dispatcher struct {
@@ -83,7 +93,9 @@ func (d *Dispatcher) dispatch() {
 
 				switch msg.Text {
 				case "/start":
-
+					fallthrough
+				case "/help":
+					d.handleHelpMsg(msg.Chat.ID)
 				case "/stop":
 					d.handleStopMsg(msg.Chat.ID)
 				case "/status":
@@ -103,6 +115,12 @@ func (d *Dispatcher) dispatch() {
 			d.handleResult(result)
 		}
 	}
+}
+
+func (d *Dispatcher) handleHelpMsg(chatID int64) {
+	msg := tgbotapi.NewMessage(chatID, HelpMsg)
+	msg.ParseMode = "Markdown"
+	d.bot.Send(msg)
 }
 
 func (d *Dispatcher) handleStopMsg(chatID int64) {
