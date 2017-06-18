@@ -9,7 +9,7 @@ import (
 const (
 	NoActiveJob    string = "There are currently no active downloads or uploads."
 	StoppedJobs    string = "Stopped %d job(s)"
-	State          string = "%s state: %s"
+	State          string = "State of %s job: %s"
 	DownloadFailed string = "Download %s failed!"
 	HelpMsg        string = `*Youtube-Music-Download-Bot*
 =========================
