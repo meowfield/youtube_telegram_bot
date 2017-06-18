@@ -27,6 +27,7 @@ type YoutubeInfo struct {
 	Title       string `json:"title"`
 	UploadDate  string `json:"upload_date"`
 	Description string `json:"description"`
+	Duration    int    `json:"duration"`
 	err         error
 }
 
